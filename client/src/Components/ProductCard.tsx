@@ -46,7 +46,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
     : discount;
 
   const handleQuickAdd = async () => {
-    const size = selectedSize || (availableSizes.length > 0 ? availableSizes[0] : 'One Size');
+    // const size = selectedSize || (availableSizes.length > 0 ? availableSizes[0] : 'One Size');
     
     // Track add to cart analytics
     await trackAddToCart(id, title, currentPrice, 1);
