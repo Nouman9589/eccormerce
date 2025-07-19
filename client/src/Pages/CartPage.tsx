@@ -1,78 +1,16 @@
-import React, { useState } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 import { useCartContext } from "../Context/CartContext";
 import { Trash2, Plus, Minus, ShoppingBag } from "lucide-react";
 
-interface PayPalLink {
-  rel: string;
-  href: string;
-  method: string;
-}
-
-interface PayPalPayment {
-  id: string;
-  intent: string;
-  state: string;
-  payer: object;
-  transactions: object[];
-  links: PayPalLink[];
-  create_time: string;
-}
-
 const CartPage: React.FC = () => {
   const { cartItems, removeItemFromCart, clearCart, updateQuantity } =
     useCartContext();
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   const totalPrice = cartItems.reduce(
     (total, item) => total + item.price * item.quantity,
     0
   );
-
-  const handleCheckout = async () => {
-    try {
-      setIsLoading(true);
-      setError(null);
-
-      // Send cart data to your backend
-      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-      const response = await fetch(`${apiUrl}/payment`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          cartItems,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to create payment");
-      }
-
-      const payment: PayPalPayment = await response.json();
-
-      // Find the approval link from the PayPal response
-      const approvalLink = payment.links.find(
-        (link: PayPalLink) => link.rel === "approval_url"
-      )?.href;
-
-      if (approvalLink) {
-        // Redirect the user to the PayPal approval page
-        window.location.href = approvalLink;
-      } else {
-        throw new Error("PayPal approval URL not found");
-      }
-    } catch (error) {
-      console.error("Error during checkout:", error);
-      setError("Failed to process checkout. Please try again.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-  console.log(cartItems);
-  
 
   if (cartItems.length === 0) {
     return (
@@ -203,20 +141,12 @@ const CartPage: React.FC = () => {
             </div>
 
             <div className="space-y-3">
-              <button
-                onClick={handleCheckout}
-                disabled={isLoading}
-                className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg
-             hover:bg-blue-700 transition-colors duration-200
-             flex items-center justify-center font-medium
-             disabled:bg-blue-400 disabled:cursor-not-allowed"
+              <div className="w-full bg-gray-100 text-gray-600 py-3 px-4 rounded-lg
+             flex items-center justify-center font-medium cursor-not-allowed"
               >
-                {isLoading ? "Processing..." : "Proceed to Checkout"}
-              </button>
+                Checkout (Coming Soon)
+              </div>
 
-              {error && (
-                <p className="text-red-500 text-sm mt-2 text-center">{error}</p>
-              )}
               <button
                 onClick={clearCart}
                 className="w-full border border-gray-300 text-gray-600 py-3 px-4

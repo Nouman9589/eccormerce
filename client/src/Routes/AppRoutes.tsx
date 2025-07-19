@@ -8,8 +8,6 @@ import DashboardItems from "../Pages/DashboardItems";
 import Cloths from "../Pages/Cloths";
 import ProductDetails from "../Pages/ProductDetails";
 import CartPage from "../Pages/CartPage";
-import SuccessPage from "../Pages/SuccesPage";
-import FailedPage from "../Pages/FailedPage";
 
 const AppRoutes = () => {
   return (
@@ -23,8 +21,6 @@ const AppRoutes = () => {
       <Route path="/cloths" element={<Cloths />} />
       <Route path="/product/:id" element={<ProductDetails />} />
       <Route path="/cart" element={<CartPage />} />
-      <Route path="/success" element={<SuccessPage />} />
-      <Route path="/failed" element={<FailedPage />} />
     </Routes>
   );
 };
