@@ -5,6 +5,8 @@ import ImageSlider from '../Components/ImageSlider';
 import Categorylink from '../Components/Categorylink';
 import ProductCard from '../Components/ProductCard';
 import SearchAndFilter from '../Components/SearchAndFilter';
+import FloatingSearch from '../Components/FloatingSearch';
+import FilterModal from '../Components/FilterModal';
 import Footer from '../Components/Footer';
 import AdminWelcome from '../Components/AdminWelcome';
 import Loader from '../Resusebles/Loader';
@@ -33,6 +35,7 @@ const HomePage = () => {
   const { products, loading } = useProductContext();
   const [searchTerm, setSearchTerm] = useState('');
   const [showAllProducts, setShowAllProducts] = useState(false);
+  const [showFilterModal, setShowFilterModal] = useState(false);
   const [filters, setFilters] = useState<FilterOptions>({
     category: '',
     minPrice: 0,
@@ -144,12 +147,30 @@ const HomePage = () => {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Search and Filter */}
-      <SearchAndFilter
+      {/* Traditional Search and Filter - Only show when searching */}
+      {(searchTerm || showAllProducts) && (
+        <SearchAndFilter
+          onSearchChange={handleSearchChange}
+          onFilterChange={handleFilterChange}
+          categories={categories}
+          priceRange={priceRange}
+        />
+      )}
+
+      {/* Floating Search - Shows when scrolled down */}
+      <FloatingSearch
         onSearchChange={handleSearchChange}
+        onFilterToggle={() => setShowFilterModal(true)}
+      />
+
+      {/* Filter Modal */}
+      <FilterModal
+        isOpen={showFilterModal}
+        onClose={() => setShowFilterModal(false)}
         onFilterChange={handleFilterChange}
         categories={categories}
         priceRange={priceRange}
+        currentFilters={filters}
       />
 
       {/* Admin Welcome Banner */}
@@ -182,8 +203,8 @@ const HomePage = () => {
 
       {/* Search Results / All Products Section */}
       {(showAllProducts || searchTerm) && (
-        <div className="py-16 bg-gray-50">
-          <div className="max-w-7xl mx-auto px-4">
+      <div className="py-16 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4">
             <div className="flex items-center justify-between mb-8">
               <div>
                 <h2 className="text-3xl font-bold text-gray-900">
@@ -199,30 +220,30 @@ const HomePage = () => {
                   setSearchTerm('');
                 }}
                 className="text-gray-600 hover:text-gray-800 font-medium"
-              >
+            >
                 Clear Search
               </button>
-            </div>
-            
+          </div>
+          
             {filteredAllProducts.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {filteredAllProducts.map((product) => (
-                  <ProductCard
-                    key={product.id}
-                    id={product.id}
-                    imageUrl={product.imageUrl}
-                    title={product.name}
-                    currentPrice={parseFloat(product.price)}
-                    originalPrice={product.originalPrice}
-                    availableSizes={product.availableSizes || []}
-                    currency="$"
-                    rating={4.5}
-                    reviewCount={Math.floor(Math.random() * 100) + 1}
-                    isNew={Math.random() > 0.7}
-                    discount={product.originalPrice ? Math.round(((product.originalPrice - parseFloat(product.price)) / product.originalPrice) * 100) : undefined}
-                  />
-                ))}
-              </div>
+              <ProductCard
+                key={product.id}
+                id={product.id}
+                imageUrl={product.imageUrl}
+                title={product.name}
+                currentPrice={parseFloat(product.price)}
+                originalPrice={product.originalPrice}
+                availableSizes={product.availableSizes || []}
+                currency="$"
+                rating={4.5}
+                reviewCount={Math.floor(Math.random() * 100) + 1}
+                isNew={Math.random() > 0.7}
+                discount={product.originalPrice ? Math.round(((product.originalPrice - parseFloat(product.price)) / product.originalPrice) * 100) : undefined}
+              />
+            ))}
+          </div>
             ) : (
               <div className="text-center py-16">
                 <h3 className="text-xl font-semibold text-gray-700 mb-2">
@@ -240,7 +261,7 @@ const HomePage = () => {
       {/* Categories Section - only show if not searching */}
       {!showAllProducts && !searchTerm && (
         <div className="py-16 bg-gray-50">
-          <div className="max-w-7xl mx-auto px-4">
+        <div className="max-w-7xl mx-auto px-4">
             <div className="text-center mb-12">
               <h2 className="text-3xl font-bold text-gray-900 mb-4">Shop by Category</h2>
               <p className="text-gray-600">Find exactly what you're looking for</p>
@@ -326,16 +347,16 @@ const HomePage = () => {
           <h2 className="text-4xl font-bold mb-4">Stay in Style</h2>
           <p className="text-xl text-gray-300 mb-8">
             Subscribe to get special offers, free giveaways, and once-in-a-lifetime deals.
-          </p>
+            </p>
           <div className="flex flex-col md:flex-row gap-4 max-w-md mx-auto">
-            <input
-              type="email"
-              placeholder="Enter your email"
-              className="flex-1 px-4 py-3 rounded-lg border border-gray-600 bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
+              <input
+                type="email"
+                placeholder="Enter your email"
+                className="flex-1 px-4 py-3 rounded-lg border border-gray-600 bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
             <button className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors">
               Subscribe
-            </button>
+              </button>
           </div>
         </div>
       </div>

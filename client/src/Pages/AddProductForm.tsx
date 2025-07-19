@@ -369,16 +369,16 @@ const AddProductForm = () => {
               </h2>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Product Name */}
+        {/* Product Name */}
                 <div className="md:col-span-2">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Product Name *
                   </label>
-                  <input
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleInputChange}
+          <input
+            type="text"
+            name="name"
+            value={formData.name}
+            onChange={handleInputChange}
                     className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
                       errors.name ? 'border-red-300' : 'border-gray-300'
                     }`}
@@ -390,21 +390,21 @@ const AddProductForm = () => {
                       {errors.name}
                     </p>
                   )}
-                </div>
+        </div>
 
                 {/* Category */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Category *
                   </label>
-                  <select
-                    name="category"
-                    value={formData.category}
+          <select
+            name="category"
+            value={formData.category}
                     onChange={handleInputChange}
                     className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
                       errors.category ? 'border-red-300' : 'border-gray-300'
                     }`}
-                  >
+          >
                     <option value="">Select a category</option>
                     {CATEGORIES.map(cat => (
                       <option key={cat.value} value={cat.value}>{cat.label}</option>
@@ -432,8 +432,8 @@ const AddProductForm = () => {
                     <option value="active">Active</option>
                     <option value="draft">Draft</option>
                     <option value="out_of_stock">Out of Stock</option>
-                  </select>
-                </div>
+          </select>
+        </div>
 
                 {/* Description */}
                 <div className="md:col-span-2">
@@ -473,11 +473,11 @@ const AddProductForm = () => {
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Price ($) *
                   </label>
-                  <input
-                    type="number"
-                    name="price"
-                    value={formData.price}
-                    onChange={handleInputChange}
+          <input
+            type="number"
+            name="price"
+            value={formData.price}
+            onChange={handleInputChange}
                     step="0.01"
                     min="0"
                     className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
@@ -540,7 +540,7 @@ const AddProductForm = () => {
                       {errors.stock}
                     </p>
                   )}
-                </div>
+        </div>
 
                 {/* SKU */}
                 <div>
@@ -548,8 +548,8 @@ const AddProductForm = () => {
                     SKU <span className="text-gray-400">(auto-generated if empty)</span>
                   </label>
                   <div className="flex">
-                    <input
-                      type="text"
+          <input
+            type="text"
                       name="sku"
                       value={formData.sku}
                       onChange={handleInputChange}
@@ -601,7 +601,7 @@ const AddProductForm = () => {
                     type="url"
                     name="imageUrl"
                     value={formData.imageUrl}
-                    onChange={handleImageChange}
+            onChange={handleImageChange}
                     className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
                       errors.imageUrl ? 'border-red-300' : 'border-gray-300'
                     }`}
@@ -794,8 +794,8 @@ const AddProductForm = () => {
                     ))}
                   </div>
                 </div>
-              )}
-            </div>
+          )}
+        </div>
 
             {/* Dimensions */}
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
@@ -872,11 +872,11 @@ const AddProductForm = () => {
                   <FileText className="w-4 h-4 mr-2" />
                   Save as Draft
                 </button>
-                <button
-                  type="submit"
-                  disabled={loading}
+        <button
+          type="submit"
+          disabled={loading}
                   className="inline-flex items-center justify-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
-                >
+        >
                   {loading ? (
                     <>
                       <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -888,10 +888,10 @@ const AddProductForm = () => {
                       Add Product
                     </>
                   )}
-                </button>
+        </button>
               </div>
             </div>
-          </form>
+      </form>
         ) : (
           /* Preview Mode */
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">

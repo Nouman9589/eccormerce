@@ -2,6 +2,8 @@ import { useState, useMemo } from 'react';
 import Categorylink from '../Components/Categorylink';
 import ProductCard from '../Components/ProductCard';
 import SearchAndFilter from '../Components/SearchAndFilter';
+import FloatingSearch from '../Components/FloatingSearch';
+import FilterModal from '../Components/FilterModal';
 import { useProductContext } from '../Context/ProductContext';
 import Footer from '../Components/Footer';
 import Loader from '../Resusebles/Loader';
@@ -18,6 +20,7 @@ interface FilterOptions {
 const Shirts = () => {
   const { products, loading } = useProductContext();
   const [searchTerm, setSearchTerm] = useState('');
+  const [showFilterModal, setShowFilterModal] = useState(false);
   const [filters, setFilters] = useState<FilterOptions>({
     category: '',
     minPrice: 0,
@@ -109,12 +112,30 @@ const Shirts = () => {
         </div>
       </div>
 
-      {/* Search and Filter */}
-      <SearchAndFilter
+      {/* Traditional Search and Filter - Only show when searching */}
+      {searchTerm && (
+        <SearchAndFilter
+          onSearchChange={handleSearchChange}
+          onFilterChange={handleFilterChange}
+          categories={categories}
+          priceRange={priceRange}
+        />
+      )}
+
+      {/* Floating Search - Shows when scrolled down */}
+      <FloatingSearch
         onSearchChange={handleSearchChange}
+        onFilterToggle={() => setShowFilterModal(true)}
+      />
+
+      {/* Filter Modal */}
+      <FilterModal
+        isOpen={showFilterModal}
+        onClose={() => setShowFilterModal(false)}
         onFilterChange={handleFilterChange}
         categories={categories}
         priceRange={priceRange}
+        currentFilters={filters}
       />
 
       {/* Page Header */}
