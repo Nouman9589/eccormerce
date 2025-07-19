@@ -5,9 +5,9 @@ import accesories from '../assets/accesories.png';
 import { Link } from 'react-router-dom';
 
 const categories = [
-  { name: 'Cloths', img: cloths, link: '/Cloths' },
-  { name: 'Footwear', img: shoes, link: '/FootWear' },
-  { name: 'Shirts', img: Newarrival, link: '/Shirts' },
+  { name: 'Cloths', img: cloths, link: '/cloths' },
+  { name: 'Footwear', img: shoes, link: '/footwear' },
+  { name: 'Shirts', img: Newarrival, link: '/shirts' },
   { name: 'Accessories', img: accesories, link: '/accessories' },
 ];
 

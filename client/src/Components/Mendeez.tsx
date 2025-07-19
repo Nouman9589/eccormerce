@@ -137,7 +137,7 @@ const Mendeez: React.FC = () => {
         {/* Cart Section */}
         <div className="flex items-center space-x-6">
           <Link
-            to="/cartPage"
+            to="/cart"
             className="cursor-pointer flex items-center space-x-2 hover:text-gray-400 transition-colors relative"
           >
             <div className="relative">

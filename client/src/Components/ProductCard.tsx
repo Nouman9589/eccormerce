@@ -43,7 +43,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
     >
       {/* Product Image Container */}
       <div className="relative aspect-[3/4] overflow-hidden bg-gray-50">
-        <Link to={`/ProductDetails/${id}`}>
+        <Link to={`/product/${id}`}>
           <img
             src={imageUrl}
             alt={title}
@@ -83,7 +83,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
           </button>
           
           <Link 
-            to={`/ProductDetails/${id}`}
+            to={`/product/${id}`}
             className="p-2 bg-white text-gray-600 hover:bg-blue-50 hover:text-blue-500 rounded-full shadow-md transition-all duration-200"
             aria-label="Quick view"
           >
@@ -104,7 +104,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
       {/* Product Info */}
       <div className="p-4">
-        <Link to={`/ProductDetails/${id}`}>
+        <Link to={`/product/${id}`}>
           <h3 className="text-gray-900 text-sm font-medium mb-2 line-clamp-2 hover:text-blue-600 transition-colors">
             {title}
           </h3>

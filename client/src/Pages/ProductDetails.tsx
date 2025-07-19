@@ -48,7 +48,7 @@ const ProductDetails: React.FC = () => {
     toast.success('Added to Cart!', `${product.title} (Size: ${selectedSize}) has been added to your cart`, {
       action: {
         label: 'View Cart',
-        onClick: () => window.location.href = '/cartPage'
+        onClick: () => window.location.href = '/cart'
       }
     });
   };
