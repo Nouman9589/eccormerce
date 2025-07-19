@@ -126,25 +126,6 @@ const HomePage = () => {
     return products.slice(0, 8);
   }, [products]);
 
-  // Get new arrivals (last 6 products)
-  const newArrivals = useMemo(() => {
-    return products.slice(-6);
-  }, [products]);
-
-  // Get popular products (products with higher prices - simulating popularity)
-  const popularProducts = useMemo(() => {
-    return [...products]
-      .sort((a, b) => parseFloat(b.price) - parseFloat(a.price))
-      .slice(0, 6);
-  }, [products]);
-
-  // Get special offers (products with originalPrice)
-  const specialOffers = useMemo(() => {
-    return products
-      .filter(product => product.originalPrice && product.originalPrice > parseFloat(product.price))
-      .slice(0, 4);
-  }, [products]);
-
   const handleSearchChange = (search: string) => {
     setSearchTerm(search);
     if (search) {
