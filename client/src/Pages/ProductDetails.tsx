@@ -2,23 +2,48 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useProductContext } from '../Context/ProductContext';
 import { useCartContext } from '../Context/CartContext';
+import { useAnalytics } from '../Context/AnalyticsContext';
 import { useToast } from '../Components/NotificationSystem';
 import Footer from '../Components/Footer';
 import ProductCard from '../Components/ProductCard';
+import ReviewSection from '../Components/ReviewSection';
 import Loader from '../Resusebles/Loader';
 
 const ProductDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { products, loading } = useProductContext();
   const { addToCart } = useCartContext();
+  const { trackProductView, trackAddToCart } = useAnalytics();
   const [selectedSize, setSelectedSize] = useState<string>('');
+  const [hasTrackedView, setHasTrackedView] = useState(false);
   const toast = useToast();
+
+  const product = products.find((product) => product.id === id);
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [id]);
 
-  const product = products.find((product) => product.id === id);
+  // Track product view when product loads
+  useEffect(() => {
+    const trackView = async () => {
+      if (product && !hasTrackedView) {
+        try {
+          await trackProductView(
+            product.id,
+            product.title,
+            parseFloat(product.price),
+            product.category || 'Product'
+          );
+          setHasTrackedView(true);
+        } catch (error) {
+          console.error('Error tracking product view:', error);
+        }
+      }
+    };
+
+    trackView();
+  }, [product, hasTrackedView, trackProductView]);
 
   if (loading) {
     return <Loader />;
@@ -30,27 +55,50 @@ const ProductDetails: React.FC = () => {
 
   const sizes = product.availableSizes || ['40', '41', '42', '43', '44', '45'];
 
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
     if (!selectedSize) {
       toast.warning('Select a Size', 'Please select a size before adding to cart');
       return;
     }
     
-    const cartItem = {
-      id: product.id,
-      title: product.title,
-      price: parseFloat(product.price),
-      imageUrl: product.imageUrl,
-      size: selectedSize,
-    };
-    
-    addToCart(cartItem);
-    toast.success('Added to Cart!', `${product.title} (Size: ${selectedSize}) has been added to your cart`, {
-      action: {
-        label: 'View Cart',
-        onClick: () => window.location.href = '/cart'
-      }
-    });
+    try {
+      // Track analytics first
+      await trackAddToCart(
+        product.id,
+        product.title,
+        parseFloat(product.price),
+        1 // quantity is always 1 from product details page
+      );
+      
+      const cartItem = {
+        id: product.id,
+        title: product.title,
+        price: parseFloat(product.price),
+        imageUrl: product.imageUrl,
+        size: selectedSize,
+      };
+      
+      addToCart(cartItem);
+      toast.success('Added to Cart!', `${product.title} (Size: ${selectedSize}) has been added to your cart`, {
+        action: {
+          label: 'View Cart',
+          onClick: () => window.location.href = '/cart'
+        }
+      });
+    } catch (error) {
+      console.error('Error tracking add to cart:', error);
+      // Still add to cart even if analytics fails
+      const cartItem = {
+        id: product.id,
+        title: product.title,
+        price: parseFloat(product.price),
+        imageUrl: product.imageUrl,
+        size: selectedSize,
+      };
+      
+      addToCart(cartItem);
+      toast.success('Added to Cart!', `${product.title} (Size: ${selectedSize}) has been added to your cart`);
+    }
   };
 
   const relatedProducts = products
@@ -126,6 +174,11 @@ const ProductDetails: React.FC = () => {
             Add to Cart
           </button>
         </div>
+      </div>
+
+      {/* Reviews Section */}
+      <div className="mt-16">
+        <ReviewSection productId={id || ''} />
       </div>
 
       {/* You May Also Like Section */}

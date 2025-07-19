@@ -5,23 +5,36 @@ import Mendeez from './Components/Mendeez';
 import { ProductProvider } from './Context/ProductContext';
 import { CartProvider } from './Context/CartContext';
 import { AuthProvider } from './Context/AuthContext';
+import { AnalyticsProvider } from './Context/AnalyticsContext';
+import { WishlistProvider } from './Context/WishlistContext';
+import { ReviewsProvider } from './Context/ReviewsContext';
 import { NotificationProvider } from './Components/NotificationSystem';
+import UserRoleStatus from './Components/UserRoleStatus';
+import AdminTestHelper from './Components/AdminTestHelper';
 
 const App = () => {
   return (
     <NotificationProvider>
       <AuthProvider>
-        <CartProvider>
-          <ProductProvider>
-            <Router>
-              <div>
-                <Mendeez />
-                <Navbar />
-                <AppRoutes />
-              </div>
-            </Router>
-          </ProductProvider>
-        </CartProvider>
+        <AnalyticsProvider>
+          <WishlistProvider>
+            <ReviewsProvider>
+              <CartProvider>
+                <ProductProvider>
+                  <Router>
+                    <div>
+                      <Mendeez />
+                      <Navbar />
+                                          <AppRoutes />
+                    <UserRoleStatus />
+                    <AdminTestHelper />
+                    </div>
+                  </Router>
+                </ProductProvider>
+              </CartProvider>
+            </ReviewsProvider>
+          </WishlistProvider>
+        </AnalyticsProvider>
       </AuthProvider>
     </NotificationProvider>
   );

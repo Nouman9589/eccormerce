@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 import { AiOutlineShoppingCart } from 'react-icons/ai';
 import { Link } from 'react-router-dom';
-import { User, LogOut, Settings, Package, Loader2, Shield } from 'lucide-react';
+import { User, LogOut, Settings, Loader2, Heart } from 'lucide-react';
 import { useCartContext } from '../Context/CartContext';
+import { useWishlistContext } from '../Context/WishlistContext';
 import { useAuth } from '../Context/AuthContext';
 import AuthModal from './AuthModal';
 
 const Mendeez: React.FC = () => {
   const { cartItems } = useCartContext();
+  const { wishlistCount } = useWishlistContext();
   const { user, isAuthenticated, logout, loading: authLoading } = useAuth();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
@@ -51,12 +53,22 @@ const Mendeez: React.FC = () => {
             <div className="relative user-menu">
               <button
                 onClick={() => setShowUserMenu(!showUserMenu)}
-                className="flex items-center space-x-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                className="flex items-center space-x-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors relative"
               >
                 <User className="w-5 h-5" />
-                <span className="hidden sm:block font-medium">
-                  {user?.name || 'User'}
-                </span>
+                <div className="hidden sm:block">
+                  <span className="font-medium block">
+                    {user?.name || 'User'}
+                  </span>
+                  {user?.role === 'admin' && (
+                    <span className="text-xs text-blue-600 font-semibold">
+                      Admin
+                    </span>
+                  )}
+                </div>
+                {user?.role === 'admin' && (
+                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-blue-500 rounded-full border-2 border-white"></div>
+                )}
                 <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
@@ -70,36 +82,28 @@ const Mendeez: React.FC = () => {
                     onClick={() => setShowUserMenu(false)}
                   >
                     <User className="w-4 h-4 mr-2" />
-                    Profile
-                  </Link>
-                  
-                  <Link
-                    to="/security"
-                    className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
-                    onClick={() => setShowUserMenu(false)}
-                  >
-                    <Shield className="w-4 h-4 mr-2" />
-                    Security Settings
-                  </Link>
-                  
-                  <Link
-                    to="/orders"
-                    className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
-                    onClick={() => setShowUserMenu(false)}
-                  >
-                    <Package className="w-4 h-4 mr-2" />
-                    Orders
+                    My Profile
                   </Link>
                   
                   {user?.role === 'admin' && (
-                    <Link
-                      to="/dashboard-items"
-                      className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
-                      onClick={() => setShowUserMenu(false)}
-                    >
-                      <Settings className="w-4 h-4 mr-2" />
-                      Admin Dashboard
-                    </Link>
+                    <>
+                      <Link
+                        to="/dashboard-items"
+                        className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                        onClick={() => setShowUserMenu(false)}
+                      >
+                        <Settings className="w-4 h-4 mr-2" />
+                        Admin Dashboard
+                      </Link>
+                      <Link
+                        to="/analytics"
+                        className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                        onClick={() => setShowUserMenu(false)}
+                      >
+                        <span className="w-4 h-4 mr-2">📊</span>
+                        Analytics
+                      </Link>
+                    </>
                   )}
                   
                   <button
@@ -134,8 +138,27 @@ const Mendeez: React.FC = () => {
           </Link>
         </div>
 
-        {/* Cart Section */}
+        {/* Cart & Wishlist Section */}
         <div className="flex items-center space-x-6">
+          {/* Wishlist */}
+          <Link
+            to="/wishlist"
+            className="cursor-pointer flex items-center space-x-2 hover:text-gray-400 transition-colors relative"
+          >
+            <div className="relative">
+              <Heart className={`w-6 h-6 ${wishlistCount > 0 ? 'text-red-500 fill-current' : ''}`} />
+              {wishlistCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                  {wishlistCount}
+                </span>
+              )}
+            </div>
+            <span className="hidden sm:block">
+              Wishlist ({wishlistCount})
+            </span>
+          </Link>
+
+          {/* Cart */}
           <Link
             to="/cart"
             className="cursor-pointer flex items-center space-x-2 hover:text-gray-400 transition-colors relative"

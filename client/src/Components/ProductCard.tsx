@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Heart, Eye, ShoppingCart, Star } from 'lucide-react';
+import { useCartContext } from '../Context/CartContext';
+import { useWishlistContext } from '../Context/WishlistContext';
+import { useAnalytics } from '../Context/AnalyticsContext';
 
 interface ProductCardProps {
   id: string;
@@ -28,17 +31,89 @@ const ProductCard: React.FC<ProductCardProps> = ({
   isNew = false,
   discount
 }) => {
-  const [isWishlisted, setIsWishlisted] = useState(false);
+  const { addToCart } = useCartContext();
+  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlistContext();
+  const { trackProductView, trackAddToCart } = useAnalytics();
   const [isHovered, setIsHovered] = useState(false);
+  const [selectedSize, setSelectedSize] = useState<string>('');
+  const [showSizeSelector, setShowSizeSelector] = useState(false);
+  const [hasTrackedView, setHasTrackedView] = useState(false);
+  
+  const isWishlisted = isInWishlist(id);
 
   const discountPercentage = originalPrice 
     ? Math.round(((originalPrice - currentPrice) / originalPrice) * 100)
     : discount;
 
+  const handleQuickAdd = async () => {
+    const size = selectedSize || (availableSizes.length > 0 ? availableSizes[0] : 'One Size');
+    
+    // Track add to cart analytics
+    await trackAddToCart(id, title, currentPrice, 1);
+    
+    if (availableSizes.length > 0) {
+      if (!selectedSize) {
+        // If no size selected, use the first available size or show selector
+        const defaultSize = availableSizes[0];
+        addToCart({
+          id,
+          title,
+          price: currentPrice,
+          imageUrl,
+          size: defaultSize
+        });
+      } else {
+        addToCart({
+          id,
+          title,
+          price: currentPrice,
+          imageUrl,
+          size: selectedSize
+        });
+      }
+    } else {
+      // No sizes available, add with default size
+      addToCart({
+        id,
+        title,
+        price: currentPrice,
+        imageUrl,
+        size: 'One Size'
+      });
+    }
+  };
+
+  const handleWishlistToggle = () => {
+    if (isWishlisted) {
+      removeFromWishlist(id);
+    } else {
+      addToWishlist({
+        id,
+        title,
+        price: currentPrice,
+        originalPrice,
+        imageUrl,
+        availableSizes,
+        rating,
+        reviewCount
+      });
+    }
+  };
+
+  const handleMouseEnter = async () => {
+    setIsHovered(true);
+    
+    // Track product view analytics (only once per product card instance)
+    if (!hasTrackedView) {
+      await trackProductView(id, title, currentPrice);
+      setHasTrackedView(true);
+    }
+  };
+
   return (
     <div 
       className="group relative bg-white rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100"
-      onMouseEnter={() => setIsHovered(true)}
+      onMouseEnter={handleMouseEnter}
       onMouseLeave={() => setIsHovered(false)}
     >
       {/* Product Image Container */}
@@ -71,7 +146,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
           isHovered ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4'
         }`}>
           <button
-            onClick={() => setIsWishlisted(!isWishlisted)}
+            onClick={handleWishlistToggle}
             className={`p-2 rounded-full shadow-md transition-all duration-200 ${
               isWishlisted 
                 ? 'bg-red-500 text-white' 
@@ -95,10 +170,42 @@ const ProductCard: React.FC<ProductCardProps> = ({
         <div className={`absolute bottom-3 left-3 right-3 transition-all duration-300 ${
           isHovered ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
         }`}>
-          <button className="w-full bg-black text-white py-2 px-4 rounded-lg font-medium hover:bg-gray-800 transition-colors duration-200 flex items-center justify-center gap-2">
-            <ShoppingCart className="w-4 h-4" />
-            Quick Add
-          </button>
+          {availableSizes.length > 0 && showSizeSelector ? (
+            <div className="bg-white rounded-lg p-2 shadow-lg border">
+              <div className="grid grid-cols-3 gap-1 mb-2">
+                {availableSizes.slice(0, 6).map((size) => (
+                  <button
+                    key={size}
+                    onClick={() => {
+                      setSelectedSize(size);
+                      setShowSizeSelector(false);
+                      handleQuickAdd();
+                    }}
+                    className="px-2 py-1 text-xs bg-gray-100 hover:bg-black hover:text-white rounded transition-colors"
+                  >
+                    {size}
+                  </button>
+                ))}
+              </div>
+              <button
+                onClick={() => setShowSizeSelector(false)}
+                className="w-full text-xs text-gray-500 hover:text-gray-700"
+              >
+                Cancel
+              </button>
+            </div>
+          ) : (
+            <button 
+              onClick={availableSizes.length > 1 ? () => setShowSizeSelector(true) : handleQuickAdd}
+              className="w-full bg-black text-white py-2 px-4 rounded-lg font-medium hover:bg-gray-800 transition-colors duration-200 flex items-center justify-center gap-2"
+            >
+              <ShoppingCart className="w-4 h-4" />
+              {availableSizes.length > 1 ? 'Select Size' : 'Quick Add'}
+              {availableSizes.length === 1 && (
+                <span className="text-xs opacity-75">({availableSizes[0]})</span>
+              )}
+            </button>
+          )}
         </div>
       </div>
 

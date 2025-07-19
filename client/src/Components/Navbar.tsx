@@ -1,8 +1,11 @@
 import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
+import { useAuth } from '../Context/AuthContext';
 
 const Navbar = () => {
+  const { user } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const isAdmin = user?.role === 'admin';
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -29,12 +32,22 @@ const Navbar = () => {
 
         {/* Links for Desktop */}
         <div className="hidden md:flex flex-1 justify-center items-center space-x-8">
-          <NavLink to="/add-product" className={navLinkClass}>
-            Add Product
-          </NavLink>
-          <NavLink to="/dashboard-items" className={navLinkClass}>
-            Dashboard Items
-          </NavLink>
+          {/* Admin Only Links */}
+          {isAdmin && (
+            <>
+              <NavLink to="/add-product" className={navLinkClass}>
+                Add Product
+              </NavLink>
+              <NavLink to="/dashboard-items" className={navLinkClass}>
+                Dashboard Items
+              </NavLink>
+              <NavLink to="/analytics" className={navLinkClass}>
+                Analytics
+              </NavLink>
+            </>
+          )}
+          
+          {/* Public Links */}
           <NavLink to="/" className={navLinkClass}>
             Home
           </NavLink>
@@ -77,12 +90,22 @@ const Navbar = () => {
 
         {/* Links for Mobile */}
         <div className="flex flex-col items-center mt-16 space-y-4">
-          <NavLink to="/add-product" className={navLinkClass}>
-            Add Product
-          </NavLink>
-          <NavLink to="/dashboard-items" className={navLinkClass}>
-            Dashboard Items
-          </NavLink>
+          {/* Admin Only Links */}
+          {isAdmin && (
+            <>
+              <NavLink to="/add-product" className={navLinkClass}>
+                Add Product
+              </NavLink>
+              <NavLink to="/dashboard-items" className={navLinkClass}>
+                Dashboard Items
+              </NavLink>
+              <NavLink to="/analytics" className={navLinkClass}>
+                Analytics
+              </NavLink>
+            </>
+          )}
+          
+          {/* Public Links */}
           <NavLink to="/" className={navLinkClass}>
             Home
           </NavLink>

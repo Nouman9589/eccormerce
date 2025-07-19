@@ -24,7 +24,7 @@ app.get("/success", (req, res) => {
   const paymentId = req.query.paymentId;
 
   if (!payerId || !paymentId) {
-    return res.status(400).send("Missing PayerID or PaymentID.");
+    return res.redirect("http://localhost:5174/failed?error=missing_params");
   }
 
   const execute_payment_json = {
@@ -34,10 +34,12 @@ app.get("/success", (req, res) => {
   paypal.payment.execute(paymentId, execute_payment_json, function (error, payment) {
     if (error) {
       console.error("Error while executing payment:", error.response);
-      return res.status(500).send("Payment execution failed. Please try again.");
+      return res.redirect("http://localhost:5174/failed?error=execution_failed");
     }
 
-    res.send("Payment successful! Thank you for your purchase.");
+    console.log("Payment executed successfully:", payment);
+    // Redirect to your beautiful React success page!
+    res.redirect("http://localhost:5174/success");
   });
 });
 // Payment route
@@ -97,7 +99,9 @@ app.post("/payment", (req, res) => {
 
 // Failed payment route
 app.get("/failed", (req, res) => {
-  res.send("Payment failed or was cancelled. You can close this window and try again.");
+  console.log("Payment failed or was cancelled by user");
+  // Redirect to your beautiful React failed page!
+  res.redirect("http://localhost:5174/failed");
 });
 
 // Start the server

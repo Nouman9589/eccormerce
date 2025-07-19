@@ -1,27 +1,45 @@
-import { useMemo } from 'react';
-import { useProductContext } from '../Context/ProductContext';
-import ProductCard from '../Components/ProductCard';
-import ImageSlider from '../Components/ImageSlider';
-import Loader from '../Resusebles/Loader';
-import Categorylink from '../Components/Categorylink';
-import Footer from '../Components/Footer';
-import { ArrowRight, Star, TrendingUp, Sparkles, Tag } from 'lucide-react';
+import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { ArrowRight } from 'lucide-react';
+import ImageSlider from '../Components/ImageSlider';
+import Categorylink from '../Components/Categorylink';
+import ProductCard from '../Components/ProductCard';
+import SearchAndFilter from '../Components/SearchAndFilter';
+import Footer from '../Components/Footer';
+import AdminWelcome from '../Components/AdminWelcome';
+import Loader from '../Resusebles/Loader';
+import { useProductContext } from '../Context/ProductContext';
 
 interface Product {
   id: string;
   name: string;
-  title: string;
-  description: string;
-  category: string;
-  imageUrl: string;
   price: string;
+  imageUrl: string;
+  category: string;
+  description?: string;
   originalPrice?: number;
   availableSizes?: string[];
 }
 
+interface FilterOptions {
+  category: string;
+  minPrice: number;
+  maxPrice: number;
+  sortBy: 'price-low' | 'price-high' | 'name' | 'newest' | 'rating';
+  inStock: boolean;
+}
+
 const HomePage = () => {
   const { products, loading } = useProductContext();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [showAllProducts, setShowAllProducts] = useState(false);
+  const [filters, setFilters] = useState<FilterOptions>({
+    category: '',
+    minPrice: 0,
+    maxPrice: 1000,
+    sortBy: 'newest',
+    inStock: false
+  });
 
   // Organize products by categories
   const productsByCategory = useMemo(() => {
@@ -34,6 +52,73 @@ const HomePage = () => {
       categories[category].push(product);
     });
     return categories;
+  }, [products]);
+
+  // Apply search and filters for "Show All Products" section
+  const filteredAllProducts = useMemo(() => {
+    if (!showAllProducts && !searchTerm) return [];
+    
+    let filtered = products;
+
+    // Apply search filter
+    if (searchTerm) {
+      filtered = filtered.filter(product =>
+        product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        product.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        product.category.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    // Apply category filter
+    if (filters.category) {
+      filtered = filtered.filter(product => 
+        product.category.toLowerCase() === filters.category.toLowerCase()
+      );
+    }
+
+    // Apply price filter
+    filtered = filtered.filter(product => {
+      const price = parseFloat(product.price);
+      return price >= filters.minPrice && price <= filters.maxPrice;
+    });
+
+    // Apply sorting
+    filtered = [...filtered].sort((a, b) => {
+      switch (filters.sortBy) {
+        case 'price-low':
+          return parseFloat(a.price) - parseFloat(b.price);
+        case 'price-high':
+          return parseFloat(b.price) - parseFloat(a.price);
+        case 'name':
+          return a.name.localeCompare(b.name);
+        case 'rating':
+          return Math.random() - 0.5;
+        case 'newest':
+        default:
+          const aTime = (a as any).createdAt?.seconds || 0;
+          const bTime = (b as any).createdAt?.seconds || 0;
+          if (aTime && bTime) {
+            return bTime - aTime;
+          }
+          return b.id.localeCompare(a.id);
+      }
+    });
+
+    return filtered;
+  }, [products, searchTerm, filters, showAllProducts]);
+
+  // Get price range for the filter component
+  const priceRange = useMemo(() => {
+    const prices = products.map(product => parseFloat(product.price));
+    return {
+      min: prices.length > 0 ? Math.floor(Math.min(...prices)) : 0,
+      max: prices.length > 0 ? Math.ceil(Math.max(...prices)) : 1000
+    };
+  }, [products]);
+
+  // Available categories
+  const categories = useMemo(() => {
+    return [...new Set(products.map(product => product.category.toLowerCase()))];
   }, [products]);
 
   // Get featured products (first 8 products)
@@ -60,12 +145,37 @@ const HomePage = () => {
       .slice(0, 4);
   }, [products]);
 
+  const handleSearchChange = (search: string) => {
+    setSearchTerm(search);
+    if (search) {
+      setShowAllProducts(true);
+    }
+  };
+
+  const handleFilterChange = (newFilters: FilterOptions) => {
+    setFilters(newFilters);
+    setShowAllProducts(true);
+  };
+
   if (loading) {
     return <Loader />;
   }
 
   return (
     <div className="min-h-screen bg-white">
+      {/* Search and Filter */}
+      <SearchAndFilter
+        onSearchChange={handleSearchChange}
+        onFilterChange={handleFilterChange}
+        categories={categories}
+        priceRange={priceRange}
+      />
+
+      {/* Admin Welcome Banner */}
+      <div className="max-w-7xl mx-auto px-4 pt-8">
+        <AdminWelcome />
+      </div>
+
       {/* Hero Section */}
       <div className="relative">
       <ImageSlider />
@@ -89,161 +199,87 @@ const HomePage = () => {
         </div>
       </div>
 
-      {/* Categories Section */}
-      <div className="py-16 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Shop by Category</h2>
-            <p className="text-gray-600">Find exactly what you're looking for</p>
-          </div>
-      <Categorylink />
-        </div>
-      </div>
-
-      {/* Featured Products */}
-      <div className="py-16">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="flex items-center justify-between mb-12">
-            <div className="flex items-center space-x-3">
-              <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg">
-                <Star className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <h2 className="text-3xl font-bold text-gray-900">Featured Products</h2>
-                <p className="text-gray-600">Handpicked favorites just for you</p>
-              </div>
-            </div>
-            <Link
-              to="/cloths"
-              className="text-blue-600 hover:text-blue-700 font-medium flex items-center"
-            >
-              View All <ArrowRight className="ml-1 w-4 h-4" />
-            </Link>
-          </div>
-          
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {featuredProducts.map((product) => (
-              <ProductCard
-                key={product.id}
-                id={product.id}
-                imageUrl={product.imageUrl}
-                title={product.name}
-                currentPrice={parseFloat(product.price)}
-                originalPrice={product.originalPrice}
-                availableSizes={product.availableSizes || []}
-                currency="$"
-                rating={4.5}
-                reviewCount={Math.floor(Math.random() * 100) + 1}
-                isNew={Math.random() > 0.7}
-                discount={product.originalPrice ? Math.round(((product.originalPrice - parseFloat(product.price)) / product.originalPrice) * 100) : undefined}
-              />
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* New Arrivals */}
-      <div className="py-16 bg-gradient-to-r from-blue-50 to-purple-50">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="flex items-center justify-between mb-12">
-            <div className="flex items-center space-x-3">
-              <div className="p-2 bg-gradient-to-r from-green-500 to-teal-500 rounded-lg">
-                <Sparkles className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <h2 className="text-3xl font-bold text-gray-900">New Arrivals</h2>
-                <p className="text-gray-600">Latest additions to our collection</p>
-              </div>
-            </div>
-            <Link
-              to="/cloths"
-              className="text-blue-600 hover:text-blue-700 font-medium flex items-center"
-            >
-              View All <ArrowRight className="ml-1 w-4 h-4" />
-            </Link>
-          </div>
-          
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {newArrivals.map((product) => (
-              <ProductCard
-                key={product.id}
-                id={product.id}
-                imageUrl={product.imageUrl}
-                title={product.name}
-                currentPrice={parseFloat(product.price)}
-                originalPrice={product.originalPrice}
-                availableSizes={product.availableSizes || []}
-                currency="$"
-                rating={4.5}
-                reviewCount={Math.floor(Math.random() * 100) + 1}
-                isNew={true}
-                discount={product.originalPrice ? Math.round(((product.originalPrice - parseFloat(product.price)) / product.originalPrice) * 100) : undefined}
-              />
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Popular Products */}
-      <div className="py-16">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="flex items-center justify-between mb-12">
-            <div className="flex items-center space-x-3">
-              <div className="p-2 bg-gradient-to-r from-orange-500 to-red-500 rounded-lg">
-                <TrendingUp className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <h2 className="text-3xl font-bold text-gray-900">Popular Products</h2>
-                <p className="text-gray-600">Customer favorites and bestsellers</p>
-              </div>
-            </div>
-            <Link
-              to="/cloths"
-              className="text-blue-600 hover:text-blue-700 font-medium flex items-center"
-            >
-              View All <ArrowRight className="ml-1 w-4 h-4" />
-            </Link>
-          </div>
-          
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {popularProducts.map((product) => (
-              <ProductCard
-                key={product.id}
-                id={product.id}
-                imageUrl={product.imageUrl}
-                title={product.name}
-                currentPrice={parseFloat(product.price)}
-                originalPrice={product.originalPrice}
-                availableSizes={product.availableSizes || []}
-                currency="$"
-                rating={4.8}
-                reviewCount={Math.floor(Math.random() * 200) + 50}
-                isNew={false}
-                discount={product.originalPrice ? Math.round(((product.originalPrice - parseFloat(product.price)) / product.originalPrice) * 100) : undefined}
-              />
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Special Offers */}
-      {specialOffers.length > 0 && (
-        <div className="py-16 bg-gradient-to-r from-red-50 to-pink-50">
+      {/* Search Results / All Products Section */}
+      {(showAllProducts || searchTerm) && (
+        <div className="py-16 bg-gray-50">
           <div className="max-w-7xl mx-auto px-4">
-            <div className="flex items-center justify-between mb-12">
-              <div className="flex items-center space-x-3">
-                <div className="p-2 bg-gradient-to-r from-red-500 to-pink-500 rounded-lg">
-                  <Tag className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <h2 className="text-3xl font-bold text-gray-900">Special Offers</h2>
-                  <p className="text-gray-600">Don't miss these amazing deals</p>
-                </div>
+            <div className="flex items-center justify-between mb-8">
+              <div>
+                <h2 className="text-3xl font-bold text-gray-900">
+                  {searchTerm ? `Search Results for "${searchTerm}"` : 'All Products'}
+                </h2>
+                <p className="text-gray-600">
+                  {filteredAllProducts.length} products found
+                </p>
               </div>
+              <button
+                onClick={() => {
+                  setShowAllProducts(false);
+                  setSearchTerm('');
+                }}
+                className="text-gray-600 hover:text-gray-800 font-medium"
+              >
+                Clear Search
+              </button>
             </div>
             
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {specialOffers.map((product) => (
+            {filteredAllProducts.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {filteredAllProducts.map((product) => (
+                  <ProductCard
+                    key={product.id}
+                    id={product.id}
+                    imageUrl={product.imageUrl}
+                    title={product.name}
+                    currentPrice={parseFloat(product.price)}
+                    originalPrice={product.originalPrice}
+                    availableSizes={product.availableSizes || []}
+                    currency="$"
+                    rating={4.5}
+                    reviewCount={Math.floor(Math.random() * 100) + 1}
+                    isNew={Math.random() > 0.7}
+                    discount={product.originalPrice ? Math.round(((product.originalPrice - parseFloat(product.price)) / product.originalPrice) * 100) : undefined}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-16">
+                <h3 className="text-xl font-semibold text-gray-700 mb-2">
+                  No products found for "{searchTerm}"
+                </h3>
+                <p className="text-gray-500 max-w-md mx-auto">
+                  Try adjusting your search terms or filters to find what you're looking for.
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Categories Section - only show if not searching */}
+      {!showAllProducts && !searchTerm && (
+        <div className="py-16 bg-gray-50">
+          <div className="max-w-7xl mx-auto px-4">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold text-gray-900 mb-4">Shop by Category</h2>
+              <p className="text-gray-600">Find exactly what you're looking for</p>
+            </div>
+        <Categorylink />
+          </div>
+        </div>
+      )}
+
+      {/* Featured Products - only show if not searching */}
+      {!showAllProducts && !searchTerm && featuredProducts.length > 0 && (
+        <div className="py-16">
+          <div className="max-w-7xl mx-auto px-4">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold text-gray-900 mb-4">Featured Products</h2>
+              <p className="text-gray-600">Handpicked favorites from our collection</p>
+            </div>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {featuredProducts.map((product) => (
                 <ProductCard
                   key={product.id}
                   id={product.id}
@@ -253,9 +289,9 @@ const HomePage = () => {
                   originalPrice={product.originalPrice}
                   availableSizes={product.availableSizes || []}
                   currency="$"
-                  rating={4.5}
-                  reviewCount={Math.floor(Math.random() * 100) + 1}
-                  isNew={false}
+                  rating={4.8}
+                  reviewCount={Math.floor(Math.random() * 150) + 20}
+                  isNew={Math.random() > 0.5}
                   discount={product.originalPrice ? Math.round(((product.originalPrice - parseFloat(product.price)) / product.originalPrice) * 100) : undefined}
                 />
               ))}
@@ -264,8 +300,8 @@ const HomePage = () => {
         </div>
       )}
 
-      {/* Category Sections */}
-      {Object.entries(productsByCategory).map(([category, categoryProducts]) => (
+      {/* Category-based Product Sections - only show if not searching */}
+      {!showAllProducts && !searchTerm && Object.entries(productsByCategory).map(([category, categoryProducts]) => (
         <div key={category} className="py-16">
           <div className="max-w-7xl mx-auto px-4">
             <div className="flex items-center justify-between mb-12">
@@ -304,23 +340,21 @@ const HomePage = () => {
       ))}
 
       {/* Newsletter Section */}
-      <div className="py-16 bg-gradient-to-r from-gray-900 to-gray-800">
-        <div className="max-w-7xl mx-auto px-4 text-center">
-          <div className="max-w-2xl mx-auto">
-            <h2 className="text-3xl font-bold text-white mb-4">Stay Updated</h2>
-            <p className="text-gray-300 mb-8">
-              Subscribe to our newsletter and be the first to know about new arrivals, exclusive deals, and special offers.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
-              <input
-                type="email"
-                placeholder="Enter your email"
-                className="flex-1 px-4 py-3 rounded-lg border border-gray-600 bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-              <button className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 flex items-center justify-center">
-                Subscribe <ArrowRight className="ml-2 w-4 h-4" />
-              </button>
-            </div>
+      <div className="py-20 bg-gradient-to-r from-gray-900 to-black text-white">
+        <div className="max-w-4xl mx-auto text-center px-4">
+          <h2 className="text-4xl font-bold mb-4">Stay in Style</h2>
+          <p className="text-xl text-gray-300 mb-8">
+            Subscribe to get special offers, free giveaways, and once-in-a-lifetime deals.
+          </p>
+          <div className="flex flex-col md:flex-row gap-4 max-w-md mx-auto">
+            <input
+              type="email"
+              placeholder="Enter your email"
+              className="flex-1 px-4 py-3 rounded-lg border border-gray-600 bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <button className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors">
+              Subscribe
+            </button>
           </div>
         </div>
       </div>

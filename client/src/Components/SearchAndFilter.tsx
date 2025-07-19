@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Search, X, ChevronDown, SlidersHorizontal } from 'lucide-react';
+import { useAnalytics } from '../Context/AnalyticsContext';
 
 interface SearchAndFilterProps {
   onSearchChange: (searchTerm: string) => void;
@@ -22,6 +23,7 @@ const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
   categories,
   priceRange
 }) => {
+  const { trackSearch } = useAnalytics();
   const [searchTerm, setSearchTerm] = useState('');
   const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState<FilterOptions>({
@@ -38,12 +40,23 @@ const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
   });
 
   useEffect(() => {
-    const debounceTimer = setTimeout(() => {
+    const debounceTimer = setTimeout(async () => {
       onSearchChange(searchTerm);
+      
+      // Track search analytics if there's a search term
+      if (searchTerm.trim().length > 2) {
+        try {
+          // We don't know the exact result count here, but we can estimate
+          // In a real implementation, you'd get this from the search results
+          await trackSearch(searchTerm.trim(), 0); // 0 as placeholder for result count
+        } catch (error) {
+          console.error('Error tracking search:', error);
+        }
+      }
     }, 300);
 
     return () => clearTimeout(debounceTimer);
-  }, [searchTerm, onSearchChange]);
+  }, [searchTerm, onSearchChange, trackSearch]);
 
   useEffect(() => {
     onFilterChange(filters);
