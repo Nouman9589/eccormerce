@@ -3,8 +3,7 @@ import { Link } from "react-router-dom";
 import { db } from "../firebase/Firebase";
 import { collection, deleteDoc, doc, onSnapshot, updateDoc, writeBatch } from "firebase/firestore";
 import { 
-  Search, 
-  Filter, 
+  Search,  
   Plus, 
   Edit2, 
   Trash2, 
@@ -12,18 +11,13 @@ import {
   Package, 
   TrendingUp, 
   DollarSign,
-  Users,
-  MoreVertical,
   X,
   Check,
   AlertTriangle,
   Loader2,
-  Download,
-  Upload,
   BarChart3
 } from "lucide-react";
 import { useToast } from "../Components/NotificationSystem";
-import { useAnalytics } from "../Context/AnalyticsContext";
 
 interface Product {
   id: string;
@@ -60,7 +54,7 @@ const DashboardItems = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
   
   const toast = useToast();
-  const { getAnalyticsData } = useAnalytics();
+ 
 
   // Calculate dashboard statistics
   const dashboardStats = useMemo((): DashboardStats => {

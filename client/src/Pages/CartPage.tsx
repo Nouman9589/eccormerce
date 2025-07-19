@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useCartContext } from "../Context/CartContext";
-import { Trash2, Plus, Minus, ShoppingBag, Heart, Tag, ShoppingCart, ArrowRight } from "lucide-react";
+import { Trash2, Plus, Minus, ShoppingBag, Heart, Tag, ShoppingCart} from "lucide-react";
 
 interface PayPalLink {
   rel: string;
