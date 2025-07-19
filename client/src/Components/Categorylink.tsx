@@ -17,21 +17,21 @@ const Categorylink = () => {
       {categories.map((category) => (
         <Link 
           to={category.link} 
-          className="block relative group" 
+          className="block relative group aspect-[4/3] sm:aspect-[3/4] lg:aspect-[4/3]" 
           key={category.name} 
           aria-label={`View ${category.name}`}>
           {/* Image */}
           <img 
             src={category.img} 
             alt={`Explore ${category.name}`} 
-            className="w-full h-96 object-cover transition-transform duration-300 group-hover:scale-105" 
+            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" 
             loading="lazy" 
           />
 
           {/* Overlay */}
-          <div className="absolute inset-0 bg-black bg-opacity-50 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-            <span className="text-white text-xl font-bold uppercase">{category.name}</span>
-            <button className="mt-2 bg-white text-black px-4 py-2 text-sm rounded hover:bg-gray-200">
+          <div className="absolute inset-0 bg-black bg-opacity-50 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            <span className="text-white text-lg sm:text-xl font-bold uppercase text-center px-2">{category.name}</span>
+            <button className="mt-2 bg-white text-black px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm rounded hover:bg-gray-200 transition-colors">
               Shop Now
             </button>
           </div>
