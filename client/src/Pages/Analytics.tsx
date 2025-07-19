@@ -6,7 +6,7 @@ import { Navigate } from 'react-router-dom';
 import { RefreshCw, TrendingUp, Calendar, Users, ShoppingBag } from 'lucide-react';
 
 const Analytics: React.FC = () => {
-  const { user, isAdmin } = useAuth();
+  const { isAdmin } = useAuth();
   const { getAnalyticsData, loading } = useAnalytics();
   const [analyticsData, setAnalyticsData] = useState<any>(null);
   const [refreshing, setRefreshing] = useState(false);

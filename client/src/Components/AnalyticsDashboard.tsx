@@ -3,7 +3,6 @@ import {
   TrendingUp,
   Package,
   Users,
-  ShoppingCart,
   Eye,
   Activity
 } from 'lucide-react';
@@ -149,7 +148,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ data }) => {
         <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Monthly Activity</h3>
           <div className="h-40 flex items-end justify-between space-x-2">
-            {data.monthlyStats.map((stat, index) => (
+            {data.monthlyStats.map((stat) => (
               <div key={stat.month} className="flex-1 flex flex-col items-center">
                 <div 
                   className="w-full bg-gradient-to-t from-purple-500 to-purple-400 rounded-t"

@@ -1,15 +1,13 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { db } from "../firebase/Firebase";
 import { collection, doc, setDoc, serverTimestamp } from "firebase/firestore";
 import { 
   Package, 
-  Upload, 
   Eye, 
   Save, 
   X, 
   AlertCircle, 
-  CheckCircle, 
   ArrowLeft,
   DollarSign,
   Tag,
@@ -17,7 +15,6 @@ import {
   Image as ImageIcon,
   Loader2,
   Plus,
-  Minus,
   Info
 } from "lucide-react";
 import { useToast } from "../Components/NotificationSystem";
@@ -90,7 +87,6 @@ const AddProductForm = () => {
   
   const navigate = useNavigate();
   const toast = useToast();
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Generate SKU automatically
   const generateSKU = () => {

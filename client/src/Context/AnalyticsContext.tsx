@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { collection, addDoc, query, orderBy, limit, getDocs, where, Timestamp, writeBatch } from 'firebase/firestore';
+import { collection, addDoc, query, orderBy, limit, getDocs, where, Timestamp } from 'firebase/firestore';
 import { db } from '../firebase/Firebase';
 import { useAuth } from './AuthContext';
 
@@ -202,12 +202,8 @@ export const AnalyticsProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   };
 
   // Update daily aggregates for better performance
-  const updateDailyAggregates = async (event: AnalyticsEvent): Promise<void> => {
+  const updateDailyAggregates = async (_event: AnalyticsEvent): Promise<void> => {
     try {
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      const dateKey = today.toISOString().split('T')[0];
-
       // This would be better implemented with Cloud Functions for atomic updates
       // For now, we'll keep it simple with the events collection
     } catch (error) {
@@ -240,7 +236,6 @@ export const AnalyticsProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       // Calculate metrics
       const purchaseEvents = events.filter(e => e.type === 'purchase');
       const productViewEvents = events.filter(e => e.type === 'product_view');
-      const cartEvents = events.filter(e => e.type === 'add_to_cart');
 
       // Total revenue from purchases
       const totalRevenue = purchaseEvents.reduce((sum, event) => sum + (event.value || 0), 0);
