@@ -4,8 +4,7 @@ import {
   signInWithEmailAndPassword, 
   signOut, 
   onAuthStateChanged, 
-  updateProfile,
-  User as FirebaseUser
+  updateProfile
 } from 'firebase/auth';
 import { auth, db } from '../firebase/Firebase';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
@@ -96,13 +95,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const login = async (email: string, password: string): Promise<void> => {
     setLoading(true);
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      await signInWithEmailAndPassword(auth, email, password);
       // User state will be updated by onAuthStateChanged listener
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Login error:', error);
       let errorMessage = 'Login failed';
       
-      switch (error.code) {
+      const firebaseError = error as { code?: string; message?: string };
+      switch (firebaseError.code) {
         case 'auth/user-not-found':
           errorMessage = 'No account found with this email';
           break;
@@ -116,7 +116,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           errorMessage = 'Too many failed attempts. Please try again later';
           break;
         default:
-          errorMessage = error.message || 'Login failed';
+          errorMessage = firebaseError.message || 'Login failed';
       }
       
       throw new Error(errorMessage);
@@ -168,11 +168,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       await setDoc(doc(db, 'users', userCredential.user.uid), userDoc);
 
       // User state will be updated by onAuthStateChanged listener
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Registration error:', error);
       let errorMessage = 'Registration failed';
       
-      switch (error.code) {
+      const firebaseError = error as { code?: string; message?: string };
+      switch (firebaseError.code) {
         case 'auth/email-already-in-use':
           errorMessage = 'An account with this email already exists';
           break;
@@ -186,7 +187,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           errorMessage = 'Password is too weak';
           break;
         default:
-          errorMessage = error.message || 'Registration failed';
+          errorMessage = firebaseError.message || 'Registration failed';
       }
       
       throw new Error(errorMessage);

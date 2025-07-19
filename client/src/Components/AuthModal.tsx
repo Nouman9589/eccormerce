@@ -88,9 +88,10 @@ const AuthModal: React.FC<AuthModalProps> = ({
         onClose();
         setLoginData({ email: '', password: '' });
       }, 500);
-    } catch (error: any) {
-      setError(error.message || 'Login failed');
-      toast.error('Login Failed', error.message || 'Please check your credentials and try again');
+    } catch (error: unknown) {
+      const errorMessage = (error as Error).message || 'Login failed';
+      setError(errorMessage);
+      toast.error('Login Failed', errorMessage || 'Please check your credentials and try again');
     } finally {
       setLoading(false);
     }
@@ -108,9 +109,10 @@ const AuthModal: React.FC<AuthModalProps> = ({
         onClose();
         setRegisterData({ name: '', email: '', password: '', confirmPassword: '' });
       }, 500);
-    } catch (error: any) {
-      setError(error.message || 'Registration failed');
-      toast.error('Registration Failed', error.message || 'Please check your information and try again');
+    } catch (error: unknown) {
+      const errorMessage = (error as Error).message || 'Registration failed';
+      setError(errorMessage);
+      toast.error('Registration Failed', errorMessage || 'Please check your information and try again');
     } finally {
       setLoading(false);
     }

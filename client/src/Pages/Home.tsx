@@ -1,11 +1,11 @@
-import { useState, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useProductContext } from '../Context/ProductContext';
 import ProductCard from '../Components/ProductCard';
 import ImageSlider from '../Components/ImageSlider';
 import Loader from '../Resusebles/Loader';
 import Categorylink from '../Components/Categorylink';
 import Footer from '../Components/Footer';
-import { ArrowRight, Star, TrendingUp, Gift, Sparkles, Tag } from 'lucide-react';
+import { ArrowRight, Star, TrendingUp, Sparkles, Tag } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 interface Product {

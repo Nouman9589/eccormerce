@@ -23,7 +23,6 @@ const ProductCard: React.FC<ProductCardProps> = ({
   currentPrice,
   originalPrice,
   availableSizes = [],
-  currency = 'USD',
   rating = 4.5,
   reviewCount = 0,
   isNew = false,
@@ -141,7 +140,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         {/* Available Sizes */}
         {availableSizes.length > 0 && (
           <div className="flex flex-wrap gap-1">
-            {availableSizes.slice(0, 4).map((size, index) => (
+            {availableSizes.slice(0, 4).map((size) => (
               <span
                 key={size}
                 className="px-2 py-1 text-xs bg-gray-100 text-gray-600 rounded border"

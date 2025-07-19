@@ -6,8 +6,6 @@ import {
   ShoppingCart, 
   Package, 
   DollarSign,
-  Eye,
-  Star,
   Calendar,
   Activity
 } from 'lucide-react';
@@ -76,7 +74,12 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ data }) => {
     </div>
   );
 
-  const SimpleChart: React.FC<{ data: any[] }> = ({ data }) => (
+  interface ChartDataItem {
+    sales: number;
+    month: string;
+  }
+
+  const SimpleChart: React.FC<{ data: ChartDataItem[] }> = ({ data }) => (
     <div className="flex items-end justify-between h-40 px-4">
       {data.map((item, index) => (
         <div key={index} className="flex flex-col items-center">
@@ -187,7 +190,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ data }) => {
         <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Top Products</h3>
           <div className="space-y-4">
-            {data.topProducts.map((product, index) => (
+            {data.topProducts.map((product) => (
               <div key={product.id} className="flex items-center space-x-4">
                 <div className="flex-shrink-0">
                   <img

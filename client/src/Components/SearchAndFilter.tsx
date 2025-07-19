@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Filter, X, ChevronDown, SlidersHorizontal } from 'lucide-react';
+import { Search, X, ChevronDown, SlidersHorizontal } from 'lucide-react';
 
 interface SearchAndFilterProps {
   onSearchChange: (searchTerm: string) => void;
@@ -49,7 +49,7 @@ const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
     onFilterChange(filters);
   }, [filters, onFilterChange]);
 
-  const handleFilterChange = (key: keyof FilterOptions, value: any) => {
+  const handleFilterChange = (key: keyof FilterOptions, value: string | number | [number, number] | boolean) => {
     setFilters(prev => ({
       ...prev,
       [key]: value

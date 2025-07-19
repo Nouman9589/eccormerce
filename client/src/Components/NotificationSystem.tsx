@@ -1,4 +1,4 @@
-import React, { useState, useEffect, createContext, useContext } from 'react';
+import React, { useState, useEffect, createContext, useContext, useCallback } from 'react';
 import { X, CheckCircle, AlertCircle, Info, AlertTriangle } from 'lucide-react';
 
 interface Notification {
@@ -37,6 +37,13 @@ const NotificationItem: React.FC<{ notification: Notification; onRemove: (id: st
   const [isVisible, setIsVisible] = useState(false);
   const [isRemoving, setIsRemoving] = useState(false);
 
+  const handleRemove = useCallback(() => {
+    setIsRemoving(true);
+    setTimeout(() => {
+      onRemove(notification.id);
+    }, 300);
+  }, [onRemove, notification.id]);
+
   useEffect(() => {
     setIsVisible(true);
     
@@ -47,14 +54,7 @@ const NotificationItem: React.FC<{ notification: Notification; onRemove: (id: st
       
       return () => clearTimeout(timer);
     }
-  }, [notification.duration]);
-
-  const handleRemove = () => {
-    setIsRemoving(true);
-    setTimeout(() => {
-      onRemove(notification.id);
-    }, 300);
-  };
+  }, [notification.duration, handleRemove]);
 
   const getIcon = () => {
     switch (notification.type) {

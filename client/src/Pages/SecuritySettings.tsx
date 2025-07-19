@@ -7,7 +7,7 @@ import Footer from '../Components/Footer';
 import { Link } from 'react-router-dom';
 
 const SecuritySettings: React.FC = () => {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const toast = useToast();
   
   const [showPasswordModal, setShowPasswordModal] = useState(false);
