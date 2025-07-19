@@ -184,7 +184,7 @@ const ProductDetails: React.FC = () => {
       {/* You May Also Like Section */}
       <div className="mt-16">
         <h2 className="text-2xl font-bold text-gray-900 mb-6">You May Also Like</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
           {relatedProducts.map((relatedProduct) => (
             <ProductCard
               key={relatedProduct.id}

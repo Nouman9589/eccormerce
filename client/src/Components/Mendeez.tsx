@@ -41,7 +41,15 @@ const Mendeez: React.FC = () => {
 
   return (
     <>
-      <div className="flex items-center justify-between p-4 text-black border-b border-gray-300 flex-wrap bg-white">
+      {/* Backdrop for user dropdown */}
+      {showUserMenu && (
+        <div 
+          className="fixed inset-0 z-30"
+          onClick={() => setShowUserMenu(false)}
+        />
+      )}
+      
+      <div className="fixed top-16 left-0 right-0 z-40 flex items-center justify-between p-4 text-black border-b border-gray-300 flex-wrap bg-white/95 backdrop-blur-md shadow-sm">
         {/* User Section */}
         <div className="flex items-center space-x-6 mb-4 sm:mb-0">
           {authLoading ? (
@@ -50,14 +58,14 @@ const Mendeez: React.FC = () => {
               <span className="text-sm text-gray-500">Loading...</span>
             </div>
           ) : isAuthenticated ? (
-            <div className="relative user-menu">
+            <div className="relative user-menu z-50">
               <button
                 onClick={() => setShowUserMenu(!showUserMenu)}
-                className="flex items-center space-x-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors relative"
+                className="flex items-center space-x-2 px-4 py-2 bg-gray-50 hover:bg-gray-100 rounded-xl transition-all duration-200 relative border border-gray-200 hover:border-gray-300"
               >
-                <User className="w-5 h-5" />
-                <div className="hidden sm:block">
-                  <span className="font-medium block">
+                <User className="w-5 h-5 text-gray-700" />
+                <div className="hidden sm:block text-left">
+                  <span className="font-medium block text-gray-900">
                     {user?.name || 'User'}
                   </span>
                   {user?.role === 'admin' && (
@@ -67,54 +75,64 @@ const Mendeez: React.FC = () => {
                   )}
                 </div>
                 {user?.role === 'admin' && (
-                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-blue-500 rounded-full border-2 border-white"></div>
+                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-blue-500 rounded-full border-2 border-white shadow-sm"></div>
                 )}
-                <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className={`w-4 h-4 ml-2 transition-transform duration-200 ${showUserMenu ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
               </button>
               
               {showUserMenu && (
-                <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
+                <div className="absolute top-full left-0 mt-2 w-56 bg-white rounded-xl shadow-xl border border-gray-200 py-2 z-60 backdrop-blur-sm transform origin-top-left transition-all duration-200">
+                  <div className="px-3 py-2 border-b border-gray-100 mb-1">
+                    <div className="text-sm font-medium text-gray-900">{user?.name || 'User'}</div>
+                    <div className="text-xs text-gray-500">{user?.email}</div>
+                  </div>
+                  
                   <Link
                     to="/profile"
-                    className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                    className="flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors rounded-lg mx-2"
                     onClick={() => setShowUserMenu(false)}
                   >
-                    <User className="w-4 h-4 mr-2" />
+                    <User className="w-4 h-4 mr-3" />
                     My Profile
                   </Link>
                   
                   {user?.role === 'admin' && (
                     <>
+                      <div className="border-t border-gray-100 my-1"></div>
+                      <div className="px-3 py-1">
+                        <span className="text-xs font-semibold text-blue-600 uppercase tracking-wider">Admin Panel</span>
+                      </div>
                       <Link
                         to="/dashboard-items"
-                        className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                        className="flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors rounded-lg mx-2"
                         onClick={() => setShowUserMenu(false)}
                       >
-                        <Settings className="w-4 h-4 mr-2" />
-                        Admin Dashboard
+                        <Settings className="w-4 h-4 mr-3" />
+                        Dashboard
                       </Link>
                       <Link
                         to="/analytics"
-                        className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                        className="flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors rounded-lg mx-2"
                         onClick={() => setShowUserMenu(false)}
                       >
-                        <span className="w-4 h-4 mr-2">📊</span>
+                        <span className="w-4 h-4 mr-3">📊</span>
                         Analytics
                       </Link>
                     </>
                   )}
                   
+                  <div className="border-t border-gray-100 my-1"></div>
                   <button
                     onClick={handleLogout}
                     disabled={loggingOut}
-                    className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors disabled:opacity-50"
+                    className="flex items-center w-full px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors disabled:opacity-50 rounded-lg mx-2"
                   >
                     {loggingOut ? (
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      <Loader2 className="w-4 h-4 mr-3 animate-spin" />
                     ) : (
-                      <LogOut className="w-4 h-4 mr-2" />
+                      <LogOut className="w-4 h-4 mr-3" />
                     )}
                     {loggingOut ? 'Logging out...' : 'Logout'}
                   </button>

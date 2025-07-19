@@ -112,12 +112,12 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
   return (
     <div 
-      className="group relative bg-white rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100"
+      className="group relative bg-white rounded-lg sm:rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={() => setIsHovered(false)}
     >
       {/* Product Image Container */}
-      <div className="relative aspect-[3/4] overflow-hidden bg-gray-50">
+      <div className="relative aspect-[4/5] sm:aspect-[3/4] overflow-hidden bg-gray-50">
         <Link to={`/product/${id}`}>
           <img
             src={imageUrl}
@@ -128,7 +128,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         </Link>
         
         {/* Badges */}
-        <div className="absolute top-3 left-3 flex flex-col gap-2">
+        <div className="absolute top-2 left-2 sm:top-3 sm:left-3 flex flex-col gap-1 sm:gap-2">
           {isNew && (
             <span className="px-2 py-1 bg-green-500 text-white text-xs font-medium rounded-full">
               NEW
@@ -142,34 +142,34 @@ const ProductCard: React.FC<ProductCardProps> = ({
         </div>
 
         {/* Action Buttons */}
-        <div className={`absolute top-3 right-3 flex flex-col gap-2 transition-all duration-300 ${
-          isHovered ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4'
-        }`}>
-          <button
+        <div className={`absolute top-2 right-2 sm:top-3 sm:right-3 flex flex-col gap-1 sm:gap-2 transition-all duration-300 ${
+          isHovered ? 'sm:opacity-100 sm:translate-x-0' : 'sm:opacity-0 sm:translate-x-4'
+        } opacity-100 translate-x-0`}>
+                      <button
             onClick={handleWishlistToggle}
-            className={`p-2 rounded-full shadow-md transition-all duration-200 ${
+            className={`p-1.5 sm:p-2 rounded-full shadow-md transition-all duration-200 ${
               isWishlisted 
                 ? 'bg-red-500 text-white' 
                 : 'bg-white text-gray-600 hover:bg-red-50 hover:text-red-500'
             }`}
             aria-label="Add to wishlist"
           >
-            <Heart className="w-4 h-4" fill={isWishlisted ? 'currentColor' : 'none'} />
+            <Heart className="w-3 h-3 sm:w-4 sm:h-4" fill={isWishlisted ? 'currentColor' : 'none'} />
           </button>
           
           <Link 
             to={`/product/${id}`}
-            className="p-2 bg-white text-gray-600 hover:bg-blue-50 hover:text-blue-500 rounded-full shadow-md transition-all duration-200"
+            className="p-1.5 sm:p-2 bg-white text-gray-600 hover:bg-blue-50 hover:text-blue-500 rounded-full shadow-md transition-all duration-200"
             aria-label="Quick view"
           >
-            <Eye className="w-4 h-4" />
+            <Eye className="w-3 h-3 sm:w-4 sm:h-4" />
           </Link>
         </div>
 
         {/* Quick Add to Cart */}
-        <div className={`absolute bottom-3 left-3 right-3 transition-all duration-300 ${
-          isHovered ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
-        }`}>
+        <div className={`absolute bottom-2 left-2 right-2 sm:bottom-3 sm:left-3 sm:right-3 transition-all duration-300 ${
+          isHovered ? 'sm:opacity-100 sm:translate-y-0' : 'sm:opacity-0 sm:translate-y-4'
+        } opacity-100 translate-y-0`}>
           {availableSizes.length > 0 && showSizeSelector ? (
             <div className="bg-white rounded-lg p-2 shadow-lg border">
               <div className="grid grid-cols-3 gap-1 mb-2">
@@ -197,9 +197,9 @@ const ProductCard: React.FC<ProductCardProps> = ({
           ) : (
             <button 
               onClick={availableSizes.length > 1 ? () => setShowSizeSelector(true) : handleQuickAdd}
-              className="w-full bg-black text-white py-2 px-4 rounded-lg font-medium hover:bg-gray-800 transition-colors duration-200 flex items-center justify-center gap-2"
+              className="w-full bg-black text-white py-1.5 sm:py-2 px-3 sm:px-4 rounded-md sm:rounded-lg text-xs sm:text-sm font-medium hover:bg-gray-800 transition-colors duration-200 flex items-center justify-center gap-1 sm:gap-2"
             >
-              <ShoppingCart className="w-4 h-4" />
+              <ShoppingCart className="w-3 h-3 sm:w-4 sm:h-4" />
               {availableSizes.length > 1 ? 'Select Size' : 'Quick Add'}
               {availableSizes.length === 1 && (
                 <span className="text-xs opacity-75">({availableSizes[0]})</span>
@@ -210,21 +210,21 @@ const ProductCard: React.FC<ProductCardProps> = ({
       </div>
 
       {/* Product Info */}
-      <div className="p-4">
+      <div className="p-3 sm:p-4">
         <Link to={`/product/${id}`}>
-          <h3 className="text-gray-900 text-sm font-medium mb-2 line-clamp-2 hover:text-blue-600 transition-colors">
+          <h3 className="text-gray-900 text-xs sm:text-sm font-medium mb-1.5 sm:mb-2 line-clamp-2 hover:text-blue-600 transition-colors">
             {title}
           </h3>
         </Link>
 
         {/* Rating */}
         {reviewCount > 0 && (
-          <div className="flex items-center gap-1 mb-2">
+          <div className="flex items-center gap-1 mb-1.5 sm:mb-2">
             <div className="flex text-yellow-400">
               {[...Array(5)].map((_, i) => (
                 <Star 
                   key={i} 
-                  className={`w-3 h-3 ${i < Math.floor(rating) ? 'fill-current' : ''}`} 
+                  className={`w-2.5 h-2.5 sm:w-3 sm:h-3 ${i < Math.floor(rating) ? 'fill-current' : ''}`} 
                 />
               ))}
             </div>
@@ -233,12 +233,12 @@ const ProductCard: React.FC<ProductCardProps> = ({
         )}
 
         {/* Price */}
-        <div className="flex items-center gap-2 mb-3">
-          <span className="text-lg font-bold text-gray-900">
+        <div className="flex items-center gap-1.5 sm:gap-2 mb-2 sm:mb-3">
+          <span className="text-sm sm:text-lg font-bold text-gray-900">
             ${currentPrice.toFixed(2)}
           </span>
           {originalPrice && (
-            <span className="text-sm text-gray-500 line-through">
+            <span className="text-xs sm:text-sm text-gray-500 line-through">
               ${originalPrice.toFixed(2)}
             </span>
           )}

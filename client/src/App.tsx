@@ -9,8 +9,8 @@ import { AnalyticsProvider } from './Context/AnalyticsContext';
 import { WishlistProvider } from './Context/WishlistContext';
 import { ReviewsProvider } from './Context/ReviewsContext';
 import { NotificationProvider } from './Components/NotificationSystem';
-import UserRoleStatus from './Components/UserRoleStatus';
-import AdminTestHelper from './Components/AdminTestHelper';
+
+
 
 const App = () => {
   return (
@@ -25,9 +25,9 @@ const App = () => {
                     <div>
                       <Mendeez />
                       <Navbar />
-                                          <AppRoutes />
-                    <UserRoleStatus />
-                    <AdminTestHelper />
+                      <div className="pt-32">
+                        <AppRoutes />
+                      </div>
                     </div>
                   </Router>
                 </ProductProvider>

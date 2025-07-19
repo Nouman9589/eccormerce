@@ -475,7 +475,7 @@ const DashboardItems = () => {
           </div>
         ) : viewMode === 'grid' ? (
           /* Grid View */
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
             {filteredProducts.map((product) => (
               <div
                 key={product.id}
@@ -494,7 +494,7 @@ const DashboardItems = () => {
                       checked={selectedProducts.includes(product.id)}
                       onChange={() => toggleProductSelection(product.id)}
                       className="w-4 h-4 text-blue-600 bg-white border-gray-300 rounded focus:ring-blue-500"
-                    />
+                />
                   </div>
                   {product.status && product.status !== 'active' && (
                     <div className="absolute top-2 right-2">
@@ -725,7 +725,7 @@ const DashboardItems = () => {
               onChange={(e) => setEditProduct({ ...editProduct, name: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     placeholder="Enter product name"
-                  />
+            />
                 </div>
 
                 {/* Description */}
@@ -739,7 +739,7 @@ const DashboardItems = () => {
                     rows={3}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     placeholder="Enter product description"
-                  />
+            />
                 </div>
 
                 {/* Category and Status */}
@@ -813,7 +813,7 @@ const DashboardItems = () => {
                     onChange={(e) => setEditProduct({ ...editProduct, stock: parseInt(e.target.value) || 0 })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     placeholder="0"
-                  />
+            />
                 </div>
 
                 {/* Image URL */}
@@ -851,7 +851,7 @@ const DashboardItems = () => {
                     })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     placeholder="S, M, L, XL"
-                  />
+            />
                 </div>
               </div>
 

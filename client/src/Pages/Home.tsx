@@ -226,7 +226,7 @@ const HomePage = () => {
           </div>
           
             {filteredAllProducts.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
                 {filteredAllProducts.map((product) => (
               <ProductCard
                 key={product.id}
@@ -280,7 +280,7 @@ const HomePage = () => {
               <p className="text-gray-600">Handpicked favorites from our collection</p>
             </div>
             
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
               {featuredProducts.map((product) => (
                 <ProductCard
                   key={product.id}
@@ -319,7 +319,7 @@ const HomePage = () => {
               </Link>
             </div>
             
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
               {(categoryProducts as Product[]).slice(0, 4).map((product) => (
             <ProductCard
               key={product.id}
