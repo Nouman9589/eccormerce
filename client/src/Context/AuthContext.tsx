@@ -7,7 +7,7 @@ import {
   updateProfile
 } from 'firebase/auth';
 import { auth, db } from '../firebase/Firebase';
-import { doc, setDoc, getDoc } from 'firebase/firestore';
+import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
 
 interface User {
   id: string;
@@ -58,6 +58,41 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // Helper function to safely convert different date formats
+  const safeToDate = (dateValue: unknown): Date => {
+    if (!dateValue) return new Date();
+    
+    // If it's already a Date object
+    if (dateValue instanceof Date) return dateValue;
+    
+    // If it has toDate method (Firestore Timestamp)
+    if (typeof dateValue === 'object' && dateValue !== null && 'toDate' in dateValue) {
+      try {
+        return (dateValue as { toDate: () => Date }).toDate();
+      } catch {
+        return new Date();
+      }
+    }
+    
+    // If it's a string or number, try to parse it
+    if (typeof dateValue === 'string' || typeof dateValue === 'number') {
+      const parsedDate = new Date(dateValue);
+      return isNaN(parsedDate.getTime()) ? new Date() : parsedDate;
+    }
+    
+    // If it's an object with seconds property (Firestore server timestamp format)
+    if (typeof dateValue === 'object' && dateValue !== null && 'seconds' in dateValue) {
+      try {
+        const timestamp = dateValue as { seconds: number; nanoseconds?: number };
+        return new Date(timestamp.seconds * 1000);
+      } catch {
+        return new Date();
+      }
+    }
+    
+    return new Date();
+  };
+
   // Initialize auth state listener
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
@@ -75,7 +110,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             avatar: userData?.avatar || firebaseUser.photoURL || `https://ui-avatars.com/api/?name=${firebaseUser.displayName || firebaseUser.email}&background=random`,
             phone: userData?.phone,
             address: userData?.address,
-            createdAt: userData?.createdAt?.toDate() || new Date(),
+            createdAt: safeToDate(userData?.createdAt),
           };
           
           setUser(user);
@@ -154,7 +189,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         email: userData.email,
         role: userData.email.includes('admin') ? 'admin' : 'customer',
         avatar: `https://ui-avatars.com/api/?name=${userData.name}&background=random`,
-        createdAt: new Date(),
+        createdAt: serverTimestamp(),
         phone: '',
         address: {
           street: '',
